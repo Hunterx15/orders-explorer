@@ -133,6 +133,16 @@ Design sketches:
 - [`design/normal-state.md`](design/normal-state.md) — normal grid state.
 - [`design/empty-state.md`](design/empty-state.md) — empty-results state.
 
+### Application Screenshots
+
+**Normal grid state**
+
+![Orders Explorer normal grid](screenshots/normal-state.png)
+
+**Empty-results state**
+
+![Orders Explorer empty results](screenshots/empty-state.png)
+
 ## Testing and Validation
 
 The following checks have been run successfully:
