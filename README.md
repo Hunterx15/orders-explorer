@@ -29,6 +29,11 @@ A React and TypeScript application for exploring, filtering, sorting, and export
 - Custom filter builder
 - CSS
 
+## Runtime Dependencies
+
+- `react` — Builds the component-based user interface and manages interactive application state.
+- `react-dom` — Renders React components into the browser DOM.
+
 ## Requirements
 
 - Node.js 24
@@ -79,7 +84,7 @@ npm run build
 
 ## Data Loading and Normalization
 
-The application fetches the original dataset from `public/data/orders.json` at runtime. The dataset is kept separate from the JavaScript application bundle.
+The application fetches the original dataset from `public/data/orders.json` at runtime using the browser's Fetch API. This keeps the approximately 16 MB JSON dataset separate from the JavaScript application bundle, reducing the initial JavaScript download. No backend or API is required. The original dataset remains unchanged, and normalization is performed in the application code.
 
 The normalization process handles:
 
@@ -124,6 +129,8 @@ The exported file is named `selected-orders.csv`.
 - CSV values are escaped, including embedded quotation marks.
 - The exported file uses UTF-8 encoding with a byte-order mark to improve compatibility with spreadsheet applications.
 
+This behavior keeps selection independent of filtering: applying a filter does not deselect previously selected orders, so exporting includes all selected orders. The selection count represents the same set of orders included in the CSV.
+
 ## Design
 
 The interface uses a dark theme with a sticky table header, resizable columns, a pinned-column option, compact rows, and an order details panel.
@@ -132,6 +139,8 @@ Design sketches:
 
 - [`design/normal-state.md`](design/normal-state.md) — normal grid state.
 - [`design/empty-state.md`](design/empty-state.md) — empty-results state.
+
+The initial sketches guided the placement of the filter builder, data grid, and empty-results message. During implementation, spacing and component details were adjusted to keep the interface dense, readable, and practical for keyboard-focused workflows on laptop screens.
 
 ### Application Screenshots
 
