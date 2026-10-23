@@ -1,29 +1,33 @@
 # Orders Explorer
 
-A React and TypeScript application for exploring, filtering, sorting, and exporting a large order dataset. The grid is designed to handle approximately 50,000 orders using custom row virtualization.
+A React and TypeScript application for exploring, filtering, sorting, and exporting approximately 50,000 order records. It features a custom virtualized data grid, a flexible filter builder, keyboard navigation, URL-persisted state, and CSV export.
 
 ## Features
 
-- **Large dataset:** Loads and normalizes order records from JSON.
-- **Virtualized grid:** Renders a visible window of rows instead of all rows simultaneously.
-- **Sorting:** Sorts columns by their underlying values, with missing `updatedAt` values kept at the bottom.
-- **Column controls:** Resize columns and pin one column while scrolling horizontally.
-- **Selection:** Select individual rows, use Shift-click for range selection, and select visible results using the header checkbox.
-- **Keyboard navigation:** Navigate cells with arrow keys, press Enter to open order details, and press Space to toggle row selection.
-- **Filtering:** Build filter conditions using supported text, numeric, date, and choice operators. Conditions within a group use OR; separate groups use AND.
-- **URL persistence:** Filters, sorting, pinned columns, and selected order IDs are stored in the URL so the state can be restored or shared.
-- **Invalid URL handling:** Invalid filter parameters fall back to default filters and display a warning.
-- **CSV export:** Export selected orders, including selected orders currently hidden by filters.
-- **Order details:** Inspect full field values, including long notes.
-- **Empty state:** Shows a helpful message when no orders match the filters.
+- **Large dataset:** Loads and normalizes order records from a JSON dataset.
+- **Virtualized grid:** Renders a window of visible rows to reduce DOM overhead when working with large datasets.
+- **Sorting:** Sorts columns using their underlying data types, with missing `updatedAt` values kept at the bottom.
+- **Column resizing:** Adjusts column widths to make information easier to inspect.
+- **Column pinning:** Pins a column while scrolling horizontally.
+- **Row selection:** Supports individual selection, Shift-click range selection, and selection of visible results using the header checkbox.
+- **Keyboard navigation:** Uses arrow keys to navigate cells, Enter to open order details, and Space to toggle row selection.
+- **Filter builder:** Supports text, numeric, date, and fixed-choice conditions.
+- **Filter logic:** Conditions within a group use OR; separate groups use AND.
+- **URL persistence:** Stores filters, sorting, pinned-column state, and selected order IDs in the URL so supported state can be restored or shared.
+- **Invalid URL handling:** Falls back to default filter state and displays a warning for invalid filter parameters.
+- **CSV export:** Exports selected orders, including orders hidden by active filters.
+- **Order details:** Provides access to full field values, including long notes.
+- **Empty state:** Displays a helpful message when no orders match the current filters.
 
 ## Tech Stack
 
 - React
 - TypeScript
 - Vite
-- JSON dataset
-- Custom table virtualization and filter builder
+- JSON
+- Custom row virtualization
+- Custom filter builder
+- CSS
 
 ## Requirements
 
@@ -31,6 +35,13 @@ A React and TypeScript application for exploring, filtering, sorting, and export
 - npm
 
 ## Getting Started
+
+Clone the repository and enter the project directory:
+
+```bash
+git clone https://github.com/Hunterx15/orders-explorer.git
+cd orders-explorer
+```
 
 Install dependencies:
 
@@ -43,6 +54,10 @@ Start the development server:
 ```bash
 npm run dev
 ```
+
+Open the local URL printed by Vite in your terminal.
+
+## Verification
 
 Run TypeScript checks:
 
@@ -64,35 +79,75 @@ npm run build
 
 ## Data Loading and Normalization
 
-The application imports the dataset from `src/data/orders.json`. The original dataset in `public/data/orders.json` is kept unchanged.
+The application fetches the original dataset from `public/data/orders.json` at runtime. The dataset is kept separate from the JavaScript application bundle.
 
-Normalization handles supported schema differences, customer-name field variants, amount units, date formats, missing values, casing, currency whitespace, and duplicate order IDs.
+The normalization process handles:
+
+- Customer-name field differences between supported schema versions.
+- Amount strings and numeric values, including schema-specific amount units.
+- Supported date formats and timestamp representations.
+- Missing or null values.
+- Status and region casing.
+- Currency whitespace.
+- Duplicate order IDs according to the dataset's update-time and file-order rules.
+- Missing priority values and long notes.
+
+The original dataset is not modified.
+
+## Filtering
+
+The filter builder supports conditions for text, numeric, date, and fixed-choice fields.
+
+Supported operations include:
+
+- **Text:** Contains, does not contain, and equals.
+- **Numbers:** Equals, greater than, less than, and between.
+- **Dates:** Before, after, and between.
+- **Fixed-choice fields:** Multi-select matching.
+
+Conditions in the same group are combined with OR. Separate groups are combined with AND. The interface provides a live result count and supports removing conditions and clearing filters.
+
+## URL State
+
+The application stores supported grid state in URL parameters, including filters, sorting, pinned-column state, and selected order IDs.
+
+Opening or refreshing a supported URL restores the corresponding state. Invalid filter parameters fall back to the default filter state and display a warning.
+
+Column widths are not persisted in the URL.
 
 ## CSV Export Policy
 
-CSV export includes every selected order, even if the order is currently hidden by active filters. The selection count reflects the selected order IDs, and the exported file is named `selected-orders.csv`.
+The exported file is named `selected-orders.csv`.
 
-CSV values are quoted and embedded quotation marks are escaped. The file uses UTF-8 encoding with a byte-order mark to improve compatibility with spreadsheet applications.
+- Export includes all selected orders, even if some are hidden by active filters.
+- The selection count represents selected order IDs, not just currently visible rows.
+- CSV values are escaped, including embedded quotation marks.
+- The exported file uses UTF-8 encoding with a byte-order mark to improve compatibility with spreadsheet applications.
 
 ## Design
 
-The interface uses a dark theme with a sticky table header, column resizing, pinned columns, compact rows, and an order details panel.
+The interface uses a dark theme with a sticky table header, resizable columns, a pinned-column option, compact rows, and an order details panel.
 
-Design sketches should be stored in the `design/` directory.
+Design sketches:
 
-## Testing Performed
+- [`design/normal-state.md`](design/normal-state.md) — normal grid state.
+- [`design/empty-state.md`](design/empty-state.md) — empty-results state.
 
-- TypeScript compilation and ESLint checks.
-- Filter conditions, group logic, and filter validation.
-- URL state restoration and invalid-filter handling.
-- Sorting, column pinning, and resizing.
-- Individual and range selection.
-- Keyboard navigation and order details.
-- CSV export, including selections hidden by filters.
-- Empty results, missing values, long notes, and large-dataset scrolling.
+## Testing and Validation
+
+The following checks have been run successfully:
+
+- TypeScript compilation.
+- ESLint.
+- Production build.
+
+Interactive checks have also been performed for filtering and filter validation, URL state restoration, sorting, selection, keyboard navigation, and CSV export.
+
+Before submission, verify the empty-results state, missing values, long notes, and scrolling through the full dataset in the running application.
 
 ## Known Limitations
 
-- Column widths are currently maintained in application state and are not persisted in the URL.
-- The grid uses a fixed row-height assumption for virtualization.
-- Selection and filter state are encoded in the URL, which can become long when many orders are selected.
+- Column widths are not persisted in the URL.
+- Virtualization assumes a fixed row height.
+- URLs can become long when many order IDs are selected.
+- CSV export includes selected rows hidden by filters; this is intentional.
